@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+			rel="stylesheet"
+		/>
+		<title>Birthday Reminder</title>
+		<style>
+			body {
+				background-color: #f5f5f5;
+				display: flex;
+				justify-content: center;
+				font-family: "Roboto Condensed", sans-serif;
+				font-style: normal;
+				font-optical-sizing: auto;
+			}
+			.board {
+				margin-top: 10%;
+				background-color: white;
+				border-radius: 10px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+				padding: 25px;
+			}
+			.header {
+				font-size: 1.5rem;
+				font-weight: 500;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="row board">
+			<header>
+				<span class="header">Birthday Reminder </span>
+			</header>
+			<div class="col s12">
+				<div class="row">
+					<div class="input-field col s6">
+						<input id="first_name" type="text" class="validate" />
+						<label for="first_name">Name</label>
+					</div>
+					<div class="input-field col s6">
+						<input id="email" type="email" class="validate" />
+						<label for="email">Email</label>
+						<span
+							class="helper-text"
+							data-error="Invalid Email"
+						></span>
+					</div>
+				</div>
+				<div class="input-field">
+					<input type="text" class="datepicker validate" id="date" />
+					<label for="date">Birthday</label>
+					<span class="helper-text" data-error="Invalid Date"></span>
+				</div>
+				<button
+					class="btn waves-effect waves-light button-submit"
+					type="submit"
+					name="action"
+					id="button"
+				>
+					Save
+				</button>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				var elems = document.querySelectorAll(".datepicker");
+				var instances = M.Datepicker.init(elems, {
+					format: "mmm-d",
+					defaultDate: new Date(),
+					autoClose: true,
+					yearRange: 1,
+				});
+				const MONTHS = [
+					"Jan",
+					"Feb",
+					"Mar",
+					"Apr",
+					"May",
+					"Jun",
+					"Jul",
+					"Aug",
+					"Sep",
+					"Oct",
+					"Nov",
+					"Dec",
+				];
+
+				var submit = document.getElementById("button");
+				submit.addEventListener("click", function () {
+					var name = document.querySelector("#first_name").value;
+					var email = document.querySelector("#email").value;
+					var date = document.querySelector("#date").value;
+					if (!name || !email || !date) {
+						M.toast({
+							html: "Please fill all fields",
+							displayLength: 1500,
+						});
+						return;
+					}
+					const [month, day] = date.split("-");
+					if (!MONTHS.includes(month) || isNaN(parseInt(day))) {
+						M.toast({
+							html: "Invalid Date",
+							displayLength: 1500,
+						});
+						return;
+					}
+					fetch("/api/birthday", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ name, email, date }),
+					})
+						.then((res) => {
+							if (!res.ok) {
+								M.toast({ html: "Error", displayLength: 2000 });
+							} else
+								M.toast({
+									html: "Saved!",
+									displayLength: 2000,
+								});
+						})
+						.catch((err) => {
+							M.toast({ html: "Error", displayLength: 2000 });
+						})
+						.finally(() => {
+							document.querySelector("#first_name").value = "";
+							document.querySelector("#email").value = "";
+							document.querySelector("#date").value = "";
+							document.querySelector("#first_name").focus();
+						});
+				});
+			});
+		</script>
+	</body>
+</html>
