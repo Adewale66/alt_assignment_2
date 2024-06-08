@@ -14,7 +14,6 @@
 # Clone this repository
 $ git clone https://github.com/Adewale66/alt_assignment_2.git
 
-
 # change directory
 $ cd assignment_7
 
@@ -26,8 +25,5 @@ $ cat .env.example > .env
 
 # Run the app
 $ node index.js
-
-# Run cron Job
-$ node cron.js
 
 ```

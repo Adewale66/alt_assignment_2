@@ -1,9 +1,9 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
-const cron = require("node-cron");
+const User = require("./schema");
 
-cron.schedule("0 7 * * *", async () => {
-	console.log("Running Cron Job");
+const cronjob = async () => {
+	console.log("Running Cron Job on" + new Date().toLocaleString("en-US"));
 	const transporter = nodemailer.createTransport({
 		service: "gmail",
 		host: "smtp.gmail.com",
@@ -15,10 +15,7 @@ cron.schedule("0 7 * * *", async () => {
 		},
 	});
 
-	const response = await fetch(
-		process.env.HOST_URL || "http://localhost:3000/api/users"
-	);
-	const users = await response.json();
+	const users = await User.find();
 	users.forEach(async (user) => {
 		const birthday = new Date(user.birthday);
 		const today = new Date();
@@ -43,4 +40,6 @@ cron.schedule("0 7 * * *", async () => {
 			}
 		}
 	});
-});
+};
+
+module.exports = cronjob;

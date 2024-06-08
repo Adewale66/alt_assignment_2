@@ -2,8 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./schema");
-
+const cron = require("node-cron");
 const app = express();
+const cronjob = require("./cron");
+
 const PORT = process.env.PORT || 3000;
 
 const MONTHS = [
@@ -52,11 +54,6 @@ app.post("/api/birthday", async (req, res) => {
 	res.sendStatus(200);
 });
 
-app.get("/api/users", async (req, res) => {
-	const users = await User.find();
-	res.json(users);
-});
-
 app.listen(PORT, async () => {
 	try {
 		await mongoose.connect(process.env.MONGO_URI);
@@ -66,3 +63,5 @@ app.listen(PORT, async () => {
 		console.error(error);
 	}
 });
+
+cron.schedule("0 7 * * *", cronjob);
