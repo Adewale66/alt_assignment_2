@@ -1,4 +1,4 @@
-<center> <h1>Birthday Remainder</h1> </center>
+<center> <h1>Birthday Reminder</h1> </center>
 
 ### Built With
 
